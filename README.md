@@ -1,7 +1,7 @@
 # scons-swig-fail
 This is a demonstrator of a bug I found. This demonstrates that two modifications and three builds, SCons will incorrectly believe that a file produced by swig is up to date.
 
-Requirements: Modify swig_tool.py to point to your swig. This issue was produced against swig 3.0.2 on windows.
+Requirements: Modify swig_tool.py to point to your swig. This issue was produced against swig 3.0.8 on windows.
 
 Process:
 
