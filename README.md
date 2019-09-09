@@ -1,12 +1,14 @@
 # scons-swig-fail
-This is a demonstrator of a bug I found. This demonstrates that two modifications and three builds, SCons will incorrectly believe that a file produced by swig is up to date.
+This is a demonstrator of a bug I found. This demonstrates that after two modifications and three builds, SCons will incorrectly believe that a file produced by swig is up to date. This issue was originally produced against swig 3.0.8 on windows. Later versions of swig seem to have addressed the original issue, and so now this demonstrator's purpose is to show the SCons side of the issue.
 
-Requirements: Modify swig_tool.py to point to your swig. This issue was produced against swig 3.0.8 on windows.
+Requirements: You need a C++ compiler. I used MinGW. See the SConstruct for setting yours up.
 
 Process:
 
-1. Run SCons once. This should produce a "lua_interop_wrap.cc" file that several KB in size. The invoke of GCC doesn't matter; it is just there to force SWIG to run.
-2. Modify class_header.h: Change "public" to "private".
-3. Run SCons once more. Swig should fail hard, with an assertion. The "lua_interop_wrap.cc" file should now be small, under 1 KB. It's just a comment block.
-4. Undo the modification to class_header.h: Change the "private" to "public".
-5. Run SCons one last time. Swig is not run. Instead, g++ will be invoked on the previously created "lua_interop_wrap.cc" file.
+1. Build the swig-crash-emulator. Run `scons swig-crash-emulator` to create an executable that emulates swig-3.0.8's behavior.
+2. Run `scons run-swig`. This should pass. The swig-crash-emulator will run, and decide to not crash. It will produce a valid .cc output file which will then be compiled.
+3. Modify class_header.h: Change the word "public" to "private".
+4. Run `scons run-swig`. This should crash with a failed assertion. SCons will recognize that it crashed and will error out. Emulating the 3.0.8 bug, the swig-crash-emulator will write out an incomplete .cc output file.
+5. Undo the change to class_header.h: Change the word "private" to "public".
+6. Run `scons run-swig` one last time. You should see a C++ compilation error. This is because SCons recognizes the .cc output file as valid and does not re-run the swig-crash-emulator.
+
